@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor de Vídeo Online</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        header {
+            background: #4a6cf7;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 25px;
+        }
+        
+        @media (min-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        .upload-section {
+            background: #f9f9f9;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .editor-section {
+            background: #f9f9f9;
+            padding: 25px;
+            border-radius: 10px;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .upload-btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: #4a6cf7;
+            color: white;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin: 15px 0;
+            box-shadow: 0 4px 15px rgba(74, 108, 247, 0.4);
+        }
+        
+        .upload-btn:hover {
+            background: #3b5be3;
+            transform: translateY(-2px);
+        }
+        
+        .video-preview {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        video {
+            width: 100%;
+            max-width: 100%;
+            border-radius: 10px;
+            background: #000;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .controls {
+            margin: 20px 0;
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            margin: 10px 0;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: #4a6cf7;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 5px;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        
+        .btn:hover {
+            background: #3b5be3;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: #28a745;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .output-section {
+            text-align: center;
+            margin-top: 20px;
+            padding: 20px;
+            background: #e9f7ef;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 30px;
+            display: none;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #4a6cf7;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background: #f1f1f1;
+            color: #666;
+        }
+        
+        .feature-list {
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .feature-list li {
+            margin-bottom: 10px;
+            padding-left: 25px;
+            position: relative;
+        }
+        
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #4a6cf7;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Editor de Vídeo Online</h1>
+            <p class="subtitle">Corte seus vídeos diretamente no navegador - sem instalar programas!</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="upload-section">
+                <h2>Como Funciona</h2>
+                <ul class="feature-list">
+                    <li>Faça upload de qualquer vídeo</li>
+                    <li>Selecione a parte que deseja cortar</li>
+                    <li>Processamento 100% online</li>
+                    <li>Download sem marca d'água</li>
+                    <li>Totalmente gratuito</li>
+                </ul>
+                
+                <h2>Faça upload do seu vídeo</h2>
+                <input type="file" id="videoUpload" accept="video/*" class="file-input">
+                <label for="videoUpload" class="upload-btn">Selecionar Vídeo</label>
+                <p id="fileName"></p>
+            </div>
+            
+            <div class="editor-section">
+                <h2>Editor de Vídeo</h2>
+                
+                <div class="video-preview">
+                    <video id="videoPlayer" controls></video>
+                </div>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="startTime">Tempo de Início (segundos):</label>
+                        <input type="range" id="startTime" min="0" value="0" step="0.1">
+                        <span id="startTimeValue">0.0s</span>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="endTime">Tempo de Fim (segundos):</label>
+                        <input type="range" id="endTime" min="0" value="0" step="0.1">
+                        <span id="endTimeValue">0.0s</span>
+                    </div>
+                    
+                    <button id="previewBtn" class="btn">Visualizar Corte</button>
+                    <button id="processBtn" class="btn btn-success">Processar Vídeo</button>
+                    <button id="resetBtn" class="btn btn-danger">Reiniciar</button>
+                </div>
+                
+                <div class="output-section" id="outputSection">
+                    <h3>Vídeo Processado com Sucesso!</h3>
+                    <video id="outputVideo" controls></video>
+                    <br>
+                    <a id="downloadBtn" class="btn btn-success" download>Baixar Vídeo</a>
+                </div>
+                
+                <div class="loading" id="loadingSection">
+                    <div class="spinner"></div>
+                    <p>Processando seu vídeo...</p>
+                    <p>Isso pode levar alguns instantes</p>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Editor de Vídeo Online - Processamento 100% no navegador - Sem instalação necessária</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const videoUpload = document.getElementById('videoUpload');
+            const videoPlayer = document.getElementById('videoPlayer');
+            const startTime = document.getElementById('startTime');
+            const endTime = document.getElementById('endTime');
+            const startTimeValue = document.getElementById('startTimeValue');
+            const endTimeValue = document.getElementById('endTimeValue');
+            const previewBtn = document.getElementById('previewBtn');
+            const processBtn = document.getElementById('processBtn');
+            const resetBtn = document.getElementById('resetBtn');
+            const outputSection = document.getElementById('outputSection');
+            const outputVideo = document.getElementById('outputVideo');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const loadingSection = document.getElementById('loadingSection');
+            const fileName = document.getElementById('fileName');
+            
+            let currentVideoFile = null;
+            
+            // Evento para quando um vídeo é selecionado
+            videoUpload.addEventListener('change', function(e) {
+                if (e.target.files && e.target.files[0]) {
+                    currentVideoFile = e.target.files[0];
+                    fileName.textContent = currentVideoFile.name;
+                    
+                    const videoURL = URL.createObjectURL(currentVideoFile);
+                    videoPlayer.src = videoURL;
+                    
+                    // Quando o vídeo estiver carregado, configurar os controles
+                    videoPlayer.onloadedmetadata = function() {
+                        startTime.max = videoPlayer.duration;
+                        endTime.max = videoPlayer.duration;
+                        endTime.value = videoPlayer.duration;
+                        startTimeValue.textContent = "0.0s";
+                        endTimeValue.textContent = videoPlayer.duration.toFixed(1) + "s";
+                    };
+                }
+            });
+            
+            // Atualizar os valores dos tempos
+            startTime.addEventListener('input', function() {
+                startTimeValue.textContent = startTime.value + "s";
+                if (parseFloat(startTime.value) > parseFloat(endTime.value)) {
+                    endTime.value = startTime.value;
+                    endTimeValue.textContent = endTime.value + "s";
+                }
+            });
+            
+            endTime.addEventListener('input', function() {
+                endTimeValue.textContent = endTime.value + "s";
+                if (parseFloat(endTime.value) < parseFloat(startTime.value)) {
+                    startTime.value = endTime.value;
+                    startTimeValue.textContent = startTime.value + "s";
+                }
+            });
+            
+            // Visualizar prévia do corte
+            previewBtn.addEventListener('click', function() {
+                if (!currentVideoFile) {
+                    alert('Por favor, selecione um vídeo primeiro.');
+                    return;
+                }
+                
+                videoPlayer.currentTime = parseFloat(startTime.value);
+                
+                // Pausar no tempo final
+                const duration = parseFloat(endTime.value) - parseFloat(startTime.value);
+                setTimeout(function() {
+                    videoPlayer.pause();
+                }, duration * 1000);
+            });
+            
+            // Processar vídeo
+            processBtn.addEventListener('click', function() {
+                if (!currentVideoFile) {
+                    alert('Por favor, selecione um vídeo primeiro.');
+                    return;
+                }
+                
+                // Mostrar loading
+                loadingSection.style.display = 'block';
+                
+                // Simular processamento (em um caso real, usaria FFmpeg.wasm)
+                setTimeout(function() {
+                    // Esconder loading
+                    loadingSection.style.display = 'none';
+                    
+                    // Mostrar que o processamento foi concluído
+                    outputSection.style.display = 'block';
+                    
+                    // Numa implementação real, aqui seria o resultado processado
+                    outputVideo.src = videoPlayer.src;
+                    downloadBtn.href = videoPlayer.src;
+                    downloadBtn.download = 'video-cortado.mp4';
+                    
+                    alert('Processamento simulado! Em uma implementação real, o vídeo seria cortado usando FFmpeg.wasm');
+                }, 2000);
+            });
+            
+            // Reiniciar
+            resetBtn.addEventListener('click', function() {
+                videoUpload.value = '';
+                videoPlayer.src = '';
+                currentVideoFile = null;
+                startTime.value = 0;
+                endTime.value = 0;
+                startTimeValue.textContent = "0.0s";
+                endTimeValue.textContent = "0.0s";
+                outputSection.style.display = 'none';
+                fileName.textContent = '';
+            });
+        });
+    </script>
+</body>
+</html>
